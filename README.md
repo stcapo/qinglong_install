@@ -44,7 +44,9 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
+
 sudo systemctl enable --now xray
+
 sudo systemctl status xray --no-pager
 
 # docker daemon proxy
@@ -58,7 +60,9 @@ Environment="NO_PROXY=localhost,127.0.0.1"
 EOF
 
 sudo systemctl daemon-reexec
+
 sudo systemctl daemon-reload
+
 sudo systemctl restart docker
 
 docker run -dit \
