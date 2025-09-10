@@ -25,3 +25,24 @@ sudo apt update
 sudo mkdir -p /usr/local/bin
 sudo unzip /root/Xray-linux-64.zip -d /usr/local/bin
 sudo chmod +x /usr/local/bin/xray
+# get your config.json
+sudo mkdir -p /usr/local/etc/xray
+sudo cp /root/a.json /usr/local/etc/xray/config.json
+sudo chown -R root:root /usr/local/etc/xray
+sudo tee /etc/systemd/system/xray.service > /dev/null <<EOF
+[Unit]
+Description=Xray Service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/xray -config /usr/local/etc/xray/config.json
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now xray
+sudo systemctl status xray --no-pager
