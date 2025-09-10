@@ -46,3 +46,31 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable --now xray
 sudo systemctl status xray --no-pager
+
+# docker daemon proxy
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo tee /etc/systemd/system/docker.service.d/proxy.conf > /dev/null <<EOF
+[Service]
+Environment="HTTP_PROXY=http://127.0.0.1:10808"
+Environment="HTTPS_PROXY=http://127.0.0.1:10808"
+Environment="NO_PROXY=localhost,127.0.0.1"
+
+EOF
+
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+docker run -dit \
+  -v $PWD/ql/data:/ql/data \
+  -p 5700:5700 \
+  -e QlBaseUrl="/" \
+  -e QlPort="5700" \
+  --name qinglong \
+  --hostname qinglong \
+  --restart unless-stopped \
+  whyour/qinglong:latest
+### 6dy script
+ql repo https://github.com/6dylan6/jdpro.git "jd_|jx_|jddj_" "backUp" "^jd[^_]|USER|JD|function|sendNotify|utils"
+right config:
+https://github.com/6dylan6/jdpro/issues/22
